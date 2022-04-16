@@ -84,10 +84,13 @@ SYSCALL_DEFINE0(delete_buffer_421){
 				temp = temp->next;
 			}
 			kfree(temp);
+			temp = NULL;
 			prev->next = buffer->read;
 			numNodes++;
 		}
 		kfree(buffer->read);
+		buffer->read = NULL;
+		buffer->write = NULL;
 		buffer->length = 0;
 		kfree(buffer);
 		buffer = NULL;
