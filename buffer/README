@@ -1,0 +1,60 @@
+This is a readme file for Project 3 for the buffer.h, buffer.c, buffer_user.c, test.c, and test_user.c
+
+For this project I started coding in userspace, it takes less time to compile and is eaiser to debug then kernel space.
+With the given buffer.h I determined that I need to code an initalizer, insert, delete and print functions for the given
+data structure. The data structure is a circularly linked list that is made up of nodes that contain the next node and
+their data. 
+
+	For the initalize function I had to declare a global buffer. This is important because then the information can
+be accessed anywhere within the other functions. This is important because the information contained within the buffer
+struct is the length of our buffer, the first node, and the most recently edited node. This allows us to quickly print,
+add, and know exactly how large our buffer is. In addition, this offers more functionality within our other functions.
+
+Within the intializer function we first make sure that our buffer does not exist yet. This is because under our parameters
+we do not need to implement that functionality. In addition, if our buffer does try to initalize and we already have one 
+it will not run and instead terminate that function. However, if this is our first run of this function we will allocate
+memory to our buffer dynamically. We allocate memory the size of our buffer. Then, we intialize the value of buffer thus,
+our length for our buffer is set to 0, we set the read and write nodes equal to NULL. Then, we create the nodes for our
+buffer. When they are created the data within them is set to zero, then we have each node point to the next and the last 
+node points to our read node. This is the head of our list. After all of this is we have successfully initalized our buffer
+the function exits.
+
+Within the insert function we first make sure our buffer exists in case it has been called without a buffer being created.
+Then, we check if our buffer is full if either of these two are true we exit our insert function because it is not possible
+for us to insert. However, if both are false then we take the data and add it to the next node using the write node of our
+buffer. After that we increase the size of our buffer and exit the function
+
+Within the print function, we must again make sure that our buffer exists and if the buffer does not exists we cannot print
+it. To print the buffer we use a simple iterator to walk through each of the nodes. If we have a buffer we know that we have exactly 20 nodes. This is 
+because it is setup to have 20 nodes. Thus we use a while loop and to go through each node and print them. Starting from the read node all the way to
+the last node. 
+
+Within the delete function we confirm that we do have a buffer. If not we cannot confirm there is a buffer then we cannot delete. Then, by knowing the
+last node points to the first node we look for the last node to delete. This is because we can easily remove it and maintain our circular loop. Then,
+by repeating this process until the last node is the first node we then delete that node and we have properly deleted all of our dynamically allocated
+memory. 
+
+Process for Kernel Space
+	By using the user space code as a framework we follow its logic. Also I used project 1 as a framework and guide to creating the kernel and 
+kernel space. The primary task was creating the syscalls and having them work properly. Looking at project 1's test.c file I discovered that the 
+location for defining the system calls was within that file. In addition, wrote functions similar to the hello syscall and reworked them to work for 
+the system calls that I had to implement. 
+	For instance within the syscall_64.tbl file I added our system calls for init_buffer, insert_buffer, print_buffer, and delete_buffer. Within 
+buffer.c I defined the system calls. This required porting the code from user space into kernel space. Logically the user space and kernel space 
+functions are identical. Lastly within the syscall.h file I setup an asmlinkage for each of the function system calls. 
+	For testing I compiled the kernel, then installed it and ran the kernel that was created then, compiled the test.c file and ran it to make sure
+that the functions had been ported properly to kernel space. By using the printk() function to make sure that the nodes were properly linked, had the
+right information and also that there were no errors. 
+
+HOW TO RUN each test
+	for test_user.c
+		gcc test_user.c buffer_user.c -o testu
+	for test.c
+		gcc test.c -o test
+		
+		when running the test and after using sudo dmesg the program will print that a print,
+insert, delete functions have been terminated. This is the expected result to make sure the program only
+runs when the buffer exists. Next should be a line saying that the buffer is full. This was for a test
+to insert one extra node when the buffer is full. Lastly it should have Nodes and their datas printing
+in order from node 0 to node 19. Each node's data should be equal to their node number for instance
+node 19 should have data = 19. 
