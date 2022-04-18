@@ -90,10 +90,13 @@ long delete_buffer_421(){
 				temp = temp->next;
 			}
 			free(temp);
+			temp = NULL;
 			prev->next = buff->read;
 			numNodes++;
 		}
 		free(buff->read);
+		buff->write = NULL;
+		buff->read = NULL;
 		buff->length = 0;
 		free(buff);
 		buff = NULL;
