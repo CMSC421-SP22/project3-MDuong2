@@ -23,7 +23,7 @@ void *prothread(void *args){
 	char printer[6];
 	int counter = 0;
 	for(int i = 0; i < 1000; i++){
-		sleep(rand() % 2);
+		sleep(((rand() % 10) + 1) * .001);
 		array = ((counter % 10) + '0');
 		for(int j = 0; j < DATA_LENGTH; j++){
 			string[j] = array;
@@ -50,7 +50,7 @@ void *conthread(void *args){
 	char temp[DATA_LENGTH] = "\0";
 	char printer[6];
 	for(int i = 0; i < 1000; i++){
-		sleep(rand() % 2);
+		sleep(((rand() % 10) + 1) * .001);
 		if(dequeue_buffer_421(temp) != -1){
 			printf("::DEQUEUEING:: ");
 			for(int j = 0; j < sizeof(printer); j++){

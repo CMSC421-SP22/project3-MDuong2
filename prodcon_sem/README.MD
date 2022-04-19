@@ -26,3 +26,9 @@ delete_buffer_421
 using a similar process to creating it we ensure that all information and nodes are destroyed properly and that there is no more allocated memory. This
 makes sure that we have no memory leaks or wasted resources on processes that no longer are needed.
 	}
+Within the test_user_sem.c file
+{
+	There are our consumer and producer functions. To solve our issue with concurrent data insertion and data removal we have to use semaphores.
+Semaphores are used to resolve the issue of accessing data by using a mutal exclusion lock therefore two of the processes cannot run at the same time
+giving us issues with our data structure.
+}
