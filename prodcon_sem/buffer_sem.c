@@ -2,92 +2,96 @@
 #include <linux/syscalls.h>
 #include <linux/semaphore.h>
 #include <linux/string.h>
-struct semaphore mutex;
-struct semaphore fill_count;
-struct semaphore empty_count;
-struct bb_buffer_421 buffer;
+#include "buffer_sem.h"
+
+static struct semaphore mutex;
+static struct semaphore fill_count;
+static struct semaphore empty_count;
+struct bb_buffer_421 *buf_sem;
 
 SYSCALL_DEFINE0(init_buffer_sem_421){
-	if(!buffer){
+	if(buf_sem){
 		return -1;
 	}else{
-		buffer = kmalloc(sizeof(struct bb_buffer_421), GFP_KERNEL);
-		buffer->length = 0;
-		buffer->read = NULL;
-		buffer->write = NULL;
-		//ASSIGN SEMAPHORES
-
+		buf_sem = kmalloc(sizeof(struct bb_buffer_421), GFP_KERNEL);
+		buf_sem->length = 0;
+		buf_sem->read = NULL;
+		buf_sem->write = NULL;
+		sema_init(&fill_count, 0);
+		sema_init(&mutex, 1);
+		sema_init(&empty_count, 20);
 		for(int i = 0; i < SIZE_OF_BUFFER; i++){
 			struct bb_node_421 *prev;
-			sturct bb_node_421 *newNode = kalloc(sizeof(struct bb_node_421), GFP_KERNEL);
+			struct bb_node_421 *newNode = kmalloc(sizeof(struct bb_node_421), GFP_KERNEL);
 			memset(newNode->data, 0,DATA_LENGTH);
-			if(buffer->read != null){
+			if(buf_sem->read != NULL){
 				prev->next = newNode;
 				if(i == SIZE_OF_BUFFER -1){
-					newNode->next = buffer->read;
+					newNode->next = buf_sem->read;
 				}
 				prev = newNode;
 			}else{
-				buffer->read = newNode;
-				buffer->write = newNode;
+				buf_sem->read = newNode;
+				buf_sem->write = newNode;
 				prev = newNode;
 			}
 		}
-		return 0;
 	}
+	return 0;
 }
 SYSCALL_DEFINE1(enqueue_buffer_sem_421, char*, data){
-	if(!buffer){
+	if(!buf_sem){
 		return -1;
 	}else{
-		//LOCK MUTEX
-		buffer->length += 1;
-		memcpy(buffer->write->data, data, sizeof(data));
-		buffer->write = buffer->write->next;
-		//POST FILL
-		//WAIT EMPTY
-		return 0;
+		down(&mutex);
+		buf_sem->length += 1;
+		memcpy(buf_sem->write->data, data, DATA_LENGTH);
+		buf_sem->write = buf_sem->write->next;
+		up(&fill_count);
+		down(&empty_count);
+		up(&mutex);
 	}
+	return 0;
 }
 SYSCALL_DEFINE1(dequeue_buffer_sem_421, char*, data){
-	if(!buffer){
+	if(!buf_sem){
 		return -1;
 	}
 	else{
-		//LOCK MUTEX
-		buffer->length -= 1;
-		memcpy(buffer->read->data, data, sizeof(buffer->read->data));
-		memset(buffer->read->data, 0, sizeof(buffer->read->data));
-		buffer->read = buffer->read->next;
-		//POST EMPTY
-		//WAIT FILL
-		return 0;
+		down(&mutex);
+		buf_sem->length -= 1;
+		memcpy(buf_sem->read->data, data, sizeof(buf_sem->read->data));
+		memset(buf_sem->read->data, 0, sizeof(buf_sem->read->data));
+		buf_sem->read = buf_sem->read->next;
+		up(&empty_count);
+		down(&fill_count);
+		up(&mutex);
 	}
+	return 0;
 }
 SYSCALL_DEFINE0(delete_buffer_sem_421){
-	if(!buffer){
+	if(!buf_sem){
 		return -1;
 	}else{
 		int nodes = 1;
 		while(SIZE_OF_BUFFER > nodes){
-			struct bb_node_421 *temp = buffer->read;
+			struct bb_node_421 *temp = buf_sem->read;
 			struct bb_node_421 *prev = temp;
-			while(temp->next != buffer->read){
+			while(temp->next != buf_sem->read){
 				prev = temp;
 				temp = temp->next;
 			}
 			kfree(temp);
 			temp = NULL;
-			prev->next = buffer->read;
+			prev->next = buf_sem->read;
 			nodes++;
 		}
-		kfree(buffer->read);
-		buffer->read = NULL;
-		buffer->write = NULL;
-		buffer->length = 0;
-		kfree(buffer);
-		buffer = NULL;
-		//FREE SEMAPHORES
-		return 0;
-	]
+		kfree(buf_sem->read);
+		buf_sem->read = NULL;
+		buf_sem->write = NULL;
+		buf_sem->length = 0;
+		kfree(buf_sem);
+		buf_sem = NULL;
+	}
+	return 0;
 }

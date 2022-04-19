@@ -33,6 +33,9 @@ Semaphores are used to resolve the issue of accessing data by using a mutal excl
 giving us issues with our data structure.
 }
 
+
+
+
 How to run 
 	test_user_sem.c
 		gcc test_user_sem.c -o test_user -lpthread
