@@ -22,3 +22,7 @@ memory allocated, and set as a 0. The initialization function can have one buffe
 when one already exists it would not create one. For the next functions within this are our enqueue and dequeue functions. These insert data of 1024
 characters and delete them from the buffer respectively. Another thing that these functions do is increase the size or decrease the size of our buffer.
 Lastly, we have our delete buffer function that deletes any of the memory that we have allocated. 
+
+How to run test file
+	test_mon.c
+		gcc test_mon.c -o test_mon -lpthread

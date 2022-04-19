@@ -12,7 +12,8 @@ void *prothread(void *args){
 	char num;
 	char string[DATA_LENGTH];
 	int counter = 0;
-	for(int i = 0; i < 10; i++){
+	for(int i = 0; i < 1000; i++){
+		printf("Pr %d", i);
 		sleep(((rand() % 10) + 1 )*.001);
 		num = ((counter % 10) + '0');
 		for(int j = 0; j < DATA_LENGTH; j++){
@@ -39,7 +40,7 @@ void *prothread(void *args){
 void *conthread(void *args){
 	char temp[DATA_LENGTH];
 	char printer[6];
-	for(int i = 0; i < 10; i++){
+	for(int i = 0; i < 1000; i++){
 		sleep(((rand() %  10) + 1) * .001);
 		if(dequeue_buffer_421(temp) != -1){
 			printf("::DEQUEUEING::");

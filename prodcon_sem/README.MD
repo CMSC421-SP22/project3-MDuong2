@@ -32,3 +32,7 @@ Within the test_user_sem.c file
 Semaphores are used to resolve the issue of accessing data by using a mutal exclusion lock therefore two of the processes cannot run at the same time
 giving us issues with our data structure.
 }
+
+How to run 
+	test_user_sem.c
+		gcc test_user_sem.c -o test_user -lpthread
